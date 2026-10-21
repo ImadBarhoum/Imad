@@ -8,7 +8,7 @@ include_once('db.php');
 isset($_GET['p']) ? $p = $_GET['p'] : $p = '';
 if(isset($p[0]) && $p[0] == '/'){$p = substr($p, 1);}
 header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Method:*');
+header('Access-Control-Allow-Methods:GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers:*');
 header('Content-Type:application/json');
 $p = explode('/', ltrim($p, '/'));

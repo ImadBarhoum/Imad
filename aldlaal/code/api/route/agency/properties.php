@@ -1,8 +1,8 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-$perPage = isset($rawdata["per_page"]) ? mysqli_real_escape_string($db, $rawdata["per_page"]) : 12;
-$page = isset($rawdata["page"]) ? mysqli_real_escape_string($db, ($rawdata["page"]-1)*$perPage) : 0;
+$perPage = int_param($rawdata["per_page"] ?? 12, 12, 500);
+$page = (max(1, int_param($rawdata["page"] ?? 1, 1)) - 1) * $perPage;
 $id = isset($rawdata["id"]) && $rawdata["id"] != null ? mysqli_real_escape_string($db,$rawdata["id"]) : 0;
 $agency_id = isset($rawdata["agency_id"]) && $rawdata["agency_id"] != null ? mysqli_real_escape_string($db,$rawdata["agency_id"]) : 0;
 $title = isset($rawdata["title"]) ? mysqli_real_escape_string($db,$rawdata["title"]) : '';
@@ -40,11 +40,11 @@ $designated_for = isset($rawdata["designated_for"]) ? mysqli_real_escape_string(
 $facade = isset($rawdata["facade"]) ? mysqli_real_escape_string($db,$rawdata["facade"]) : '';
 $rent_duration = isset($rawdata["rent_duration"]) ? mysqli_real_escape_string($db,$rawdata["rent_duration"]) : '';
 $payment_method = isset($rawdata["payment_method"]) ? mysqli_real_escape_string($db,$rawdata["payment_method"]) : '';
-$main_features = isset($rawdata["main_features"]) ? mysqli_real_escape_string($db,$rawdata["main_features"]) : [];
-$internal_features = isset($rawdata["internal_features"]) ? mysqli_real_escape_string($db,$rawdata["internal_features"]) : [];
-$appliances = isset($rawdata["appliances"]) ? mysqli_real_escape_string($db,$rawdata["appliances"]) : [];
-$extra_features = isset($rawdata["extra_features"]) ? mysqli_real_escape_string($db,$rawdata["extra_features"]) : [];
-$nearby_places = isset($rawdata["nearby_places"]) ? mysqli_real_escape_string($db,$rawdata["nearby_places"]) : [];
+$main_features = isset($rawdata["main_features"]) ? mysqli_real_escape_string($db,$rawdata["main_features"]) : '[]';
+$internal_features = isset($rawdata["internal_features"]) ? mysqli_real_escape_string($db,$rawdata["internal_features"]) : '[]';
+$appliances = isset($rawdata["appliances"]) ? mysqli_real_escape_string($db,$rawdata["appliances"]) : '[]';
+$extra_features = isset($rawdata["extra_features"]) ? mysqli_real_escape_string($db,$rawdata["extra_features"]) : '[]';
+$nearby_places = isset($rawdata["nearby_places"]) ? mysqli_real_escape_string($db,$rawdata["nearby_places"]) : '[]';
 
 
 
@@ -229,7 +229,7 @@ function add($title,$description,$purpose,$type,$price,$curr,$bedrooms,$bathroom
     $uid = isset($auth['data']->id) ? $auth['data']->id : 0;
     $aid = mysqli_fetch_object(mysqli_query($db,"select id from agencies where owner_id='$uid'"))?->id;
 
-    $imgs = json_encode($imgs,JSON_UNESCAPED_UNICODE);
+    $imgs = mysqli_real_escape_string($db,json_encode($imgs,JSON_UNESCAPED_UNICODE));
 
     /*$main_features = json_encode($main_features,JSON_UNESCAPED_UNICODE);
     $internal_features = json_encode($internal_features,JSON_UNESCAPED_UNICODE);
@@ -246,7 +246,7 @@ function add($title,$description,$purpose,$type,$price,$curr,$bedrooms,$bathroom
     }else{$admin_review = "pending";}
 
 
-    $location = json_encode($location,true);
+    $location = mysqli_real_escape_string($db,json_encode($location,true));
     mysqli_query($db,"insert into properties (agency_id,title,description,purpose,type,price,curr,bedrooms,bathrooms,garages,area_m2,address,city,state,location,img,video,plan_img,imgs,estate_status,status,is_owner,property_nature,floor,area_unit,building_age,is_mortgaged,property_status,designated_for,facade,rent_duration,payment_method,main_features,internal_features,appliances,extra_features,nearby_places,is_furnished,admin_review) 
                             values ('$aid','$title','$description','$purpose','$type','$price','$curr','$bedrooms','$bathrooms','$garages','$area_m2','$address','$city','$state','$location','$img','$video','$plan_img','$imgs','$estate_status','$status','$is_owner','$property_nature','$floor','$area_unit','$building_age','$is_mortgaged','$property_status','$designated_for','$facade','$rent_duration','$payment_method','$main_features','$internal_features','$appliances','$extra_features','$nearby_places','$is_furnished','$admin_review')");
     log_ads('add',mysqli_insert_id($db));
@@ -261,8 +261,10 @@ function edit($id,$title,$description,$purpose,$type,$price,$curr,$bedrooms,$bat
     global $db,$auth;
     $uid = isset($auth['data']->id) ? $auth['data']->id : 0;
     $aid = mysqli_fetch_object(mysqli_query($db,"select id from agencies where owner_id='$uid'"))?->id;
+    $is_owner_agency = $aid ? mysqli_num_rows(mysqli_query($db,"select id from properties where id='$id' and agency_id='$aid'")) : 0;
+    if($is_owner_agency == 0){echo json_encode(array("status" => 0));exit();}
 
-    $imgs = json_encode($imgs,JSON_UNESCAPED_UNICODE);
+    $imgs = mysqli_real_escape_string($db,json_encode($imgs,JSON_UNESCAPED_UNICODE));
 
     /*$main_features = json_encode($main_features,JSON_UNESCAPED_UNICODE);
     $internal_features = json_encode($internal_features,JSON_UNESCAPED_UNICODE);
@@ -270,12 +272,12 @@ function edit($id,$title,$description,$purpose,$type,$price,$curr,$bedrooms,$bat
     $extra_features = json_encode($extra_features,JSON_UNESCAPED_UNICODE);
     $nearby_places = json_encode($nearby_places,JSON_UNESCAPED_UNICODE);*/
 
-    $location = json_encode($location,true);
+    $location = mysqli_real_escape_string($db,json_encode($location,true));
     mysqli_query($db,"update properties set agency_id='$aid',title='$title',description='$description',purpose='$purpose',type='$type',
                             price='$price',curr='$curr',bedrooms='$bedrooms',bathrooms='$bathrooms',garages='$garages',area_m2='$area_m2',address='$address',city='$city',state='$state',
                             location='$location',img='$img',video='$video',plan_img='$plan_img',imgs='$imgs',estate_status='$estate_status',status='$status',
                             is_owner='$is_owner',property_nature='$property_nature',floor='$floor',area_unit='$area_unit',building_age='$building_age',is_mortgaged='$is_mortgaged',property_status='$property_status',designated_for='$designated_for',facade='$facade',rent_duration='$rent_duration',payment_method='$payment_method',main_features='$main_features',internal_features='$internal_features',appliances='$appliances',extra_features='$extra_features',nearby_places='$nearby_places',is_furnished='$is_furnished'
-                            where id='$id'");
+                            where id='$id' and agency_id='$aid'");
     log_ads('edit',$id);
     echo json_encode(array("status" => 1));exit();
 }
@@ -305,5 +307,6 @@ function log_ads($type,$id){
     }elseif($type == "remove"){
         $msg = "قام المكتب : ".$agency_name." بحذف إعلان بعنوان : ".$ads;
     }
+    $msg = mysqli_real_escape_string($db,$msg);
     mysqli_query($db,"insert into logs_agencies (agency_id,content) values ('$aid','$msg')");
 }

@@ -1,7 +1,7 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-$page = isset($rawdata["page"]) ? mysqli_real_escape_string($db, $rawdata["page"]) : 1;
+$page = max(1, int_param($rawdata["page"] ?? 1, 1));
 $id = isset($rawdata["id"]) && $rawdata["id"] != null ? mysqli_real_escape_string($db,$rawdata["id"]) : 0;
 $agency_id = isset($rawdata["agency_id"]) && $rawdata["agency_id"] != null ? mysqli_real_escape_string($db,$rawdata["agency_id"]) : 0;
 $type = isset($rawdata["type"]) && $rawdata["type"] != null ? mysqli_real_escape_string($db,$rawdata["type"]) : "";
@@ -40,12 +40,13 @@ function getFav($page){
     $id = $auth['data']->id;
     $data = [];
     $page = ($page-1)*10;
-    $fav_qr1 = mysqli_query($db,"select * from favorites where user_id='$id'");
+    $fav_qr1 = mysqli_query($db,"select f.property_id from favorites f inner join properties p on p.id=f.property_id and p.status='active' where f.user_id='$id' order by f.id desc limit $page,10");
     if(mysqli_num_rows($fav_qr1) == 0){echo json_encode(array("status" => 1,"data" => $data));exit();}
 
     while ($fav_qr = mysqli_fetch_object($fav_qr1)){
         $property_id = $fav_qr->property_id;
-        $qr = mysqli_fetch_object(mysqli_query($db,"select * from properties where id='$property_id' and status='active' limit $page,10"));
+        $qr = mysqli_fetch_object(mysqli_query($db,"select * from properties where id='$property_id' and status='active'"));
+        if(!$qr){continue;}
         $agency = mysqli_fetch_object(mysqli_query($db,"select owner_id,name,phone from agencies where id='$qr->agency_id'"));
 
         if($auth['valid'] == 1){

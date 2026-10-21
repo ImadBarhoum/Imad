@@ -1,7 +1,7 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-isset($rawdata["page"]) && $rawdata["page"] != '' ? $page = mysqli_real_escape_string($db, $rawdata["page"]) : $page = 1;
+$page = max(1, int_param($rawdata["page"] ?? 1, 1));
 isset($rawdata["id"]) && $rawdata["id"] != '' ? $id = mysqli_real_escape_string($db, $rawdata["id"]) : $id = 0;
 isset($rawdata["ads_id"]) && $rawdata["ads_id"] != '' ? $ads_id = mysqli_real_escape_string($db, $rawdata["ads_id"]) : $ads_id = 0;
 isset($rawdata["msg"]) && $rawdata["msg"] != '' ? $msg = mysqli_real_escape_string($db, $rawdata["msg"]) : $msg = '';

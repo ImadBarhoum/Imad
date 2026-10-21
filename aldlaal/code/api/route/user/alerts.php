@@ -1,7 +1,7 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-isset($rawdata["page"]) && $rawdata["page"] != '' ? $page = mysqli_real_escape_string($db, $rawdata["page"]) : $page = 1;
+$page = max(1, int_param($rawdata["page"] ?? 1, 1));
 isset($rawdata["id"]) && $rawdata["id"] != '' ? $id = mysqli_real_escape_string($db, $rawdata["id"]) : $id = 0;
 $title = isset($rawdata["title"]) ? mysqli_real_escape_string($db,$rawdata["title"]) : '';
 isset($rawdata["notification_email"]) && $rawdata["notification_email"] != '' ? $notification_email = mysqli_real_escape_string($db, $rawdata["notification_email"]) : $notification_email = 0;
@@ -20,7 +20,7 @@ if (!isset($p[2]) || $p[2] == '') {
     edit($id,$title,$notification_email,$notification_app);
 }elseif($p[2] == 'remove'){
     remove($id);
-}elseif($p[2] == 'remove'){
+}elseif($p[2] == 'reset_count'){
     reset_count($id);
 }else{
     echo json_encode(array("status" => 0));exit();
@@ -80,7 +80,7 @@ function get_one($id){
 function add($title,$search_json,$notification_email,$notification_app){
     global $db,$auth;
     $uid = $auth['data']->id;
-    $search_json = json_encode($search_json,JSON_UNESCAPED_UNICODE);
+    $search_json = mysqli_real_escape_string($db,json_encode($search_json,JSON_UNESCAPED_UNICODE));
 
     // add search_query
     $search_query = "";

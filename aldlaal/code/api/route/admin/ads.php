@@ -1,8 +1,8 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-isset($rawdata["per_page"]) && $rawdata["per_page"] != '' ? $perPage = mysqli_real_escape_string($db, $rawdata["per_page"]) : $perPage = 0;
-isset($rawdata["page"]) && $rawdata["page"] != '' ? $page = mysqli_real_escape_string($db, ($rawdata["page"]-1)*$perPage) : $page = 0;
+$perPage = int_param($rawdata["per_page"] ?? 0, 0, 500);
+$page = (max(1, int_param($rawdata["page"] ?? 1, 1)) - 1) * $perPage;
 isset($rawdata["id"]) && $rawdata["id"] != '' ? $id = mysqli_real_escape_string($db, $rawdata["id"]) : $id = 0;
 isset($rawdata["slug"]) && $rawdata["slug"] != '' ? $slug = mysqli_real_escape_string($db, $rawdata["slug"]) : $slug = '';
 isset($rawdata["route"]) && $rawdata["route"] != '' && $rawdata["route"] != null ? $route = mysqli_real_escape_string($db, $rawdata["route"]) : $route = '';

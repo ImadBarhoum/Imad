@@ -1,4 +1,5 @@
 <?php
+if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 function get_ads($id){
     global $db,$domain,$path,$ssl;
     $qr1 = mysqli_query($db,"select * from properties where id='$id' and status='active' and admin_review='approved'");
@@ -33,8 +34,8 @@ function getDeviceType() {
     }
 }
 
-$id = isset($p[1]) ? mysqli_real_escape_string($db,$p[1]) : 0;
-$data = get_ads($id);
+$id = isset($p[1]) ? intval($p[1]) : 0;
+$data = array_map(function($v){return htmlspecialchars(strval($v), ENT_QUOTES, 'UTF-8');}, get_ads($id));
 $device = getDeviceType();
 header('Content-Type: text/html; charset=utf-8');
 ?>

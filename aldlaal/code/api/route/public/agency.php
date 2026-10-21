@@ -2,7 +2,7 @@
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
 $id = isset($rawdata["id"]) ? mysqli_real_escape_string($db,$rawdata["id"]) : 0;
-isset($rawdata["page"]) && $rawdata["page"] != '' ? $page = mysqli_real_escape_string($db, $rawdata["page"]) : $page = 1;
+$page = max(1, int_param($rawdata["page"] ?? 1, 1));
 isset($rawdata["search"]) && $rawdata["search"] != '' ? $search = mysqli_real_escape_string($db, $rawdata["search"]) : $search = '';
 $city = isset($rawdata["city"]) && $rawdata["city"] != null ? mysqli_real_escape_string($db,$rawdata["city"]) : '';
 $state = isset($rawdata["state"]) && $rawdata["state"] != null ? mysqli_real_escape_string($db,$rawdata["state"]) : '';

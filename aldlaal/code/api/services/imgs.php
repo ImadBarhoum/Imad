@@ -1,7 +1,7 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-isset($rawdata["img_name"]) ? $img_name = $rawdata["img_name"] : $img_name = '';
+isset($rawdata["img_name"]) && is_string($rawdata["img_name"]) ? $img_name = $rawdata["img_name"] : $img_name = '';
 
 if(!isset($p[1]) || $p[1] == ''){
     echo json_encode(array("status" => 0));exit();
@@ -19,10 +19,12 @@ if(!isset($p[1]) || $p[1] == ''){
 
 function save_img($img){
     global $db;
-    if($img == ''){echo json_encode(array("status" => 0));exit();}
+    // only base64 data URIs are accepted (not file paths or URLs)
+    if(!preg_match('/^data:image\/[a-z0-9.+-]+;base64,/i', $img)){echo json_encode(array("status" => 0));exit();}
+    if(@exif_imagetype($img) === false){echo json_encode(array("status" => 0));exit();}
     $yearMonth = date('Y-m');
 
-    $name = time()."_".rand(1000,9999);
+    $name = time()."_".random_int(1000,9999);
     $img_name = convertImage($img,$yearMonth,$name,'sm');
     convertImage($img,$yearMonth,$name,'md');
     convertImage($img,$yearMonth,$name,'lg');

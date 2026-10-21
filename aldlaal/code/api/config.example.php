@@ -16,6 +16,8 @@ $sms_api_key= "";
 // Whatsapp API
 $whatsapp_instance_id = "";
 $whatsapp_access_token = "";
+// Cron: if set, call /cron/autorun/<cron_key> instead of /cron/autorun
+$cron_key = "";
 // SMTP (email OTP)
 $smtp_host = "";
 $smtp_user = "";

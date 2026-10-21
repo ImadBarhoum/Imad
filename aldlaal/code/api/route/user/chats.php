@@ -1,7 +1,7 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-isset($rawdata["page"]) && $rawdata["page"] != '' ? $page = mysqli_real_escape_string($db, $rawdata["page"]) : $page = 1;
+$page = max(1, int_param($rawdata["page"] ?? 1, 1));
 isset($rawdata["id"]) && $rawdata["id"] != '' ? $id = mysqli_real_escape_string($db, $rawdata["id"]) : $id = 0;
 isset($rawdata["ads_id"]) && $rawdata["ads_id"] != '' ? $ads_id = mysqli_real_escape_string($db, $rawdata["ads_id"]) : $ads_id = 0;
 isset($rawdata["msg"]) && $rawdata["msg"] != '' ? $msg = mysqli_real_escape_string($db, $rawdata["msg"]) : $msg = '';
@@ -134,6 +134,7 @@ function send_msg($ads_id,$msg,$img){
     $id = $auth['data']->id;
     $agency_id = mysqli_fetch_object(mysqli_query($db,"select agency_id from properties where id='$ads_id'"))?->agency_id;
     $chat_id = mysqli_fetch_object(mysqli_query($db,"select owner_id from agencies where id='$agency_id'"))?->owner_id;
+    if(!$chat_id || ($msg == '' && $img == '')){echo json_encode(array("status" => 0,"id" => 0));exit();}
 
     //if($id == $chat_id){echo json_encode(array("status" => 2,"id" => 0));exit();}
     mysqli_query($db,"insert into messages (sender_id,receiver_id,msg,img,ads_id,owner_id) values ('$id','$chat_id','$msg','$img','$ads_id','$chat_id')");
@@ -156,7 +157,9 @@ function delete_msg($chat_id){
 function add_review($ads_id,$rate){
     global $db,$auth;
     $id = $auth['data']->id;
+    $rate = max(1, min(5, intval($rate)));
     $agency_id = mysqli_fetch_object(mysqli_query($db,"select agency_id from properties where id='$ads_id'"))?->agency_id;
+    if(!$agency_id){echo json_encode(array("status" => 0));exit();}
     $check = mysqli_num_rows(mysqli_query($db,"select id from reviews where user_id='$id' and ads_id='$ads_id' and agency_id='$agency_id'"));
     if($check > 0){
         mysqli_query($db,"update reviews set rate='$rate' where user_id='$id' and ads_id='$ads_id' and agency_id='$agency_id'");

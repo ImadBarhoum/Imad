@@ -31,16 +31,12 @@ SET time_zone = "+00:00";
 CREATE TABLE `admin` (
   `id` int(11) NOT NULL,
   `user` varchar(31) NOT NULL DEFAULT '',
-  `pwd` varchar(31) NOT NULL DEFAULT '',
+  `pwd` varchar(255) NOT NULL DEFAULT '',
   `token` varchar(11) NOT NULL DEFAULT '',
   `valid` int(1) NOT NULL DEFAULT '1',
   `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `admin`
---
 
 
 -- --------------------------------------------------------
@@ -67,10 +63,6 @@ CREATE TABLE `agencies` (
   `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `agencies`
---
 
 
 -- --------------------------------------------------------
@@ -226,10 +218,6 @@ CREATE TABLE `favorites` (
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `favorites`
---
-
 
 -- --------------------------------------------------------
 
@@ -243,10 +231,6 @@ CREATE TABLE `logs_agencies` (
   `content` text NOT NULL,
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `logs_agencies`
---
 
 
 -- --------------------------------------------------------
@@ -267,10 +251,6 @@ CREATE TABLE `messages` (
   `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `messages`
---
 
 
 -- --------------------------------------------------------
@@ -308,10 +288,6 @@ CREATE TABLE `otp_temp` (
   `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `otp_temp`
---
 
 
 -- --------------------------------------------------------
@@ -366,6 +342,7 @@ CREATE TABLE `properties` (
   `img` varchar(31) NOT NULL DEFAULT '',
   `imgs` text NOT NULL,
   `plan_img` varchar(31) NOT NULL DEFAULT '',
+  `video` varchar(63) NOT NULL DEFAULT '',
   `is_owner` varchar(63) NOT NULL DEFAULT '',
   `property_nature` varchar(63) NOT NULL DEFAULT '',
   `floor` varchar(63) NOT NULL DEFAULT '',
@@ -391,10 +368,6 @@ CREATE TABLE `properties` (
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `properties`
---
-
 
 -- --------------------------------------------------------
 
@@ -411,10 +384,6 @@ CREATE TABLE `reviews` (
   `update_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `reviews`
---
 
 
 -- --------------------------------------------------------
@@ -437,10 +406,6 @@ CREATE TABLE `search_favorites` (
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `search_favorites`
---
-
 
 -- --------------------------------------------------------
 
@@ -455,10 +420,6 @@ CREATE TABLE `search_recent` (
   `ads_id` int(11) NOT NULL DEFAULT '0',
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `search_recent`
---
 
 
 -- --------------------------------------------------------
@@ -512,10 +473,6 @@ CREATE TABLE `sliders` (
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `sliders`
---
-
 
 -- --------------------------------------------------------
 
@@ -528,7 +485,7 @@ CREATE TABLE `users` (
   `name` varchar(63) NOT NULL DEFAULT '',
   `img` varchar(31) NOT NULL DEFAULT '',
   `email` varchar(63) NOT NULL DEFAULT '',
-  `pwd` varchar(31) NOT NULL DEFAULT '',
+  `pwd` varchar(255) NOT NULL DEFAULT '',
   `phone` varchar(31) NOT NULL DEFAULT '',
   `city` varchar(31) NOT NULL DEFAULT '',
   `state` varchar(31) NOT NULL DEFAULT '',
@@ -542,10 +499,6 @@ CREATE TABLE `users` (
   `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `users`
---
 
 
 -- --------------------------------------------------------
@@ -726,37 +679,37 @@ ALTER TABLE `user_docs`
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `agencies`
 --
 ALTER TABLE `agencies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `citys`
 --
 ALTER TABLE `citys`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `logs_agencies`
 --
 ALTER TABLE `logs_agencies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -768,55 +721,55 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `otp_temp`
 --
 ALTER TABLE `otp_temp`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `pages`
 --
 ALTER TABLE `pages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `search_favorites`
 --
 ALTER TABLE `search_favorites`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `search_recent`
 --
 ALTER TABLE `search_recent`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sliders`
 --
 ALTER TABLE `sliders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, ;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user_docs`

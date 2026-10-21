@@ -1,12 +1,12 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-$perPage = isset($rawdata["per_page"]) ? mysqli_real_escape_string($db, $rawdata["per_page"]) : 0;
-$page = isset($rawdata["page"]) ? mysqli_real_escape_string($db, ($rawdata["page"]-1)*$perPage) : 0;
+$perPage = int_param($rawdata["per_page"] ?? 0, 0, 500);
+$page = (max(1, int_param($rawdata["page"] ?? 1, 1)) - 1) * $perPage;
 $id = isset($rawdata["id"]) ? mysqli_real_escape_string($db,$rawdata["id"]) : 0;
 $user = isset($rawdata["user"]) ? mysqli_real_escape_string($db,$rawdata["user"]) : '';
 $email = isset($rawdata["email"]) ? mysqli_real_escape_string($db,$rawdata["email"]) : '';
-$pwd = isset($rawdata["pwd"]) ? mysqli_real_escape_string($db,$rawdata["pwd"]) : '';
+$pwd = isset($rawdata["pwd"]) && is_string($rawdata["pwd"]) ? $rawdata["pwd"] : '';
 $name = isset($rawdata["name"]) ? mysqli_real_escape_string($db,$rawdata["name"]) : '';
 $valid = isset($rawdata["valid"]) ? mysqli_real_escape_string($db,$rawdata["valid"]) : 0;
 
@@ -80,6 +80,7 @@ function add($user,$pwd,$valid){
         $row = mysqli_num_rows(mysqli_query($db,"select user from admin where user='$user'"));
         if($row == 0){
             $token = generateRandomString();
+            $pwd = hash_pwd($pwd);
             mysqli_query($db,"insert into admin (user,pwd,valid,token) values ('$user','$pwd','$valid','$token')");
             $res = array("status" => 1);
             echo json_encode($res);exit();
@@ -93,7 +94,7 @@ function add($user,$pwd,$valid){
 // edit
 function edit($id,$pwd,$valid){
     global $db;
-    if($pwd != ''){mysqli_query($db,"update admin set pwd='$pwd' where id='$id'");}
+    if($pwd != ''){$pwd = hash_pwd($pwd); mysqli_query($db,"update admin set pwd='$pwd' where id='$id'");}
     mysqli_query($db,"update admin set valid='$valid' where id='$id'");
     $res = array("status" => 1);
     echo json_encode($res);exit();

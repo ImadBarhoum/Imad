@@ -6,7 +6,7 @@ use Firebase\JWT\Key;
 if(in_array($p[0],array('admin_login','login','user_login_phone','register','reset_password','send_email_otp','send_phone_otp'))){
     $user = isset($rawdata["user"]) ? mysqli_real_escape_string($db,$rawdata["user"]) : '';
     $email = isset($rawdata["email"]) ? mysqli_real_escape_string($db,$rawdata["email"]) : '';
-    $pwd = isset($rawdata["pwd"]) ? mysqli_real_escape_string($db,$rawdata["pwd"]) : '';
+    $pwd = isset($rawdata["pwd"]) && is_string($rawdata["pwd"]) ? $rawdata["pwd"] : '';
     $name = isset($rawdata["name"]) ? mysqli_real_escape_string($db,$rawdata["name"]) : '';
     $phone = isset($rawdata["phone"]) ? mysqli_real_escape_string($db,$rawdata["phone"]) : '';
     $city = isset($rawdata["city"]) ? mysqli_real_escape_string($db,$rawdata["city"]) : '';
@@ -51,7 +51,9 @@ function admin_login($user,$pwd){
     $qr0 = mysqli_query($db,"select id,user,pwd,token from admin where user='$user' and valid='1'");
     $row = mysqli_num_rows($qr0);
     $qr = mysqli_fetch_object($qr0);
-    if($row == 1 && $user == $qr->user && $pwd == $qr->pwd){
+    $needs_rehash = false;
+    if($row == 1 && $user == $qr->user && check_pwd($pwd,$qr->pwd,$needs_rehash)){
+        if($needs_rehash){upgrade_pwd('admin',$qr->id,$pwd,$qr->pwd);}
         $payload = [
             'exp' => time() + (3600*24*30), // session for 1 month
             'data' => [
@@ -79,7 +81,9 @@ function user_login($email,$pwd){
     $qr0 = mysqli_query($db,"select id,email,pwd,login_token from users where email='$email' and status='active'");
     $row = mysqli_num_rows($qr0);
     $qr = mysqli_fetch_object($qr0);
-    if($row == 1 && $email == $qr->email && $pwd == $qr->pwd){
+    $needs_rehash = false;
+    if($row == 1 && $email == $qr->email && check_pwd($pwd,$qr->pwd,$needs_rehash)){
+        if($needs_rehash){upgrade_pwd('users',$qr->id,$pwd,$qr->pwd);}
         $payload = [
             'exp' => time() + (3600*24*30), // session for 1 month
             'data' => [
@@ -111,7 +115,7 @@ function user_login_phone($phone,$otp){
         $id = $qr->id;
         $otp_code = $qr->otp;
         $attempts = $qr->attempts;
-        if($otp_code == $otp && $attempts <= 10){
+        if($otp != '' && $attempts < 10 && hash_equals(strval($otp_code), strval($otp))){
             mysqli_query($db,"delete from otp_temp where email='$phone'");
             $qr0 = mysqli_query($db,"select id,email,pwd,login_token from users where phone='$phone' and status='active'");
             $row = mysqli_num_rows($qr0);
@@ -165,7 +169,7 @@ function force_logout(){
         if($user_type == "admin"){
             mysqli_query($db,"update admin set token='$token' where id='$id'");
         }elseif($user_type == "user"){
-            mysqli_query($db,"update users set token='$token' where id='$id'");
+            mysqli_query($db,"update users set login_token='$token' where id='$id'");
         }
         echo json_encode(array("status" => 1));exit();
     }else{
@@ -186,15 +190,16 @@ function jwt_checker(){
         $status = JWT::decode($jwt, new Key($secret_key, 'HS256'));
         if(isset($status->data->token) && isset($status->data->user_type) && isset($status->data->user) && isset($status->data->id)){
             $user_type = $status->data->user_type;
-            $id = $status->data->id;
+            $id = intval($status->data->id);
             $user = $status->data->user;
-            $token = $status->data->token;
+            $token = mysqli_real_escape_string($db,strval($status->data->token));
+            $qr = false;
             if($user_type == "admin"){
                 $qr = mysqli_query($db,"select id from admin where id='$id' and token='$token' and valid='1'");
             }elseif($user_type == "user"){
                 $qr = mysqli_query($db,"select id from users where id='$id' and login_token='$token' and status='active'");
             }
-            if (mysqli_num_rows($qr) != 0){
+            if ($qr && mysqli_num_rows($qr) != 0){
                 $res = array("valid" => 1,"data" => $status->data,"lang" => $lang,"device" => $device);
             }else{
                 $res = array("valid" => 0,"lang" => $lang,"device" => $device);
@@ -226,6 +231,7 @@ function user_register($name,$email,$pwd,$phone,$city,$state,$otp,$type='email')
         echo json_encode(array("status" => 6));exit(); // otp not match
     }else{mysqli_query($db,"delete from otp_temp where email='$activation'");}
     $login_token = generateRandomString();
+    $pwd = $pwd != '' ? hash_pwd($pwd) : '';
     mysqli_query($db,"insert into users (name,email,pwd,phone,city,state,login_token) values ('$name','$email','$pwd','$phone','$city','$state','$login_token')");
 
 
@@ -249,6 +255,7 @@ function reset_password($email,$pwd,$otp){
         echo json_encode(array("status" => 6));exit(); // otp not match
     }else{mysqli_query($db,"delete from otp_temp where email='$email'");}
     $login_token = generateRandomString();
+    $pwd = hash_pwd($pwd);
     mysqli_query($db,"update users set pwd='$pwd',login_token='$login_token' where email='$email'");
     echo json_encode(array("status" => 1));exit();
 }
@@ -266,7 +273,7 @@ function send_email_otp($email,$type){
 
     $valid_otp = mysqli_num_rows(mysqli_query($db,"select id from otp_temp where email='$email' and create_at > NOW() - INTERVAL 59 SECOND"));
     if($valid_otp != 0){echo json_encode(array("status" => 3));exit();} // OTP Still Valid
-    $otp = rand(100000,999999);
+    $otp = random_int(100000,999999);
 
     $subject = 'Your One-Time Password (OTP)';
     $body = '<!DOCTYPE html>
@@ -311,7 +318,7 @@ function send_phone_otp($phone,$type){
 
     $valid_otp = mysqli_num_rows(mysqli_query($db,"select id from otp_temp where email='$phone' and create_at > NOW() - INTERVAL 59 SECOND"));
     if($valid_otp != 0){echo json_encode(array("status" => 3));exit();} // OTP Still Valid
-    $otp = rand(100000,999999);
+    $otp = random_int(100000,999999);
 
     $tests = array('962777777777','962777777888','962777777999');
     if(in_array($phone,$tests)){

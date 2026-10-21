@@ -8,9 +8,9 @@ if($p[0] == ''){
     echo json_encode(array("status" => 0));exit();
 }elseif($p[0] == 'admin' && $auth['valid'] == 1 && $auth['data']->user_type == "admin"){
     include_once('route/admin.php');
-}elseif($p[0] == 'agency' && $auth['valid'] == 1){
+}elseif($p[0] == 'agency' && $auth['valid'] == 1 && $auth['data']->user_type == "user"){
     include_once('route/agency.php');
-}elseif($p[0] == 'user' && $auth['valid'] == 1){
+}elseif($p[0] == 'user' && $auth['valid'] == 1 && $auth['data']->user_type == "user"){
     include_once('route/user.php');
 }elseif($p[0] == 'public'){
     include_once('route/public.php');

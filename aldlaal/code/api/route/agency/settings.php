@@ -1,8 +1,8 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-$pwd = isset($rawdata["pwd"]) ? mysqli_real_escape_string($db,$rawdata["pwd"]) : '';
-$pwd_new = isset($rawdata["pwd_new"]) ? mysqli_real_escape_string($db,$rawdata["pwd_new"]) : '';
+$pwd = isset($rawdata["pwd"]) && is_string($rawdata["pwd"]) ? $rawdata["pwd"] : '';
+$pwd_new = isset($rawdata["pwd_new"]) && is_string($rawdata["pwd_new"]) ? $rawdata["pwd_new"] : '';
 $name = isset($rawdata["name"]) ? mysqli_real_escape_string($db,$rawdata["name"]) : '';
 $email = isset($rawdata["email"]) ? mysqli_real_escape_string($db,$rawdata["email"]) : '';
 $phone = isset($rawdata["phone"]) ? mysqli_real_escape_string($db,$rawdata["phone"]) : '';
@@ -76,8 +76,9 @@ function edit($name,$email,$phone,$city,$state,$status){
 function edit_pwd($pwd,$pwd_new){
     global $db,$auth;
     $uid = isset($auth['data']->id) ? $auth['data']->id : 0;
-    $row = mysqli_num_rows(mysqli_query($db,"select id from users where id='$uid' and pwd='$pwd' and role='agency'"));
-    if($row == 0){echo json_encode(array("status" => 0));exit();}
+    $stored = mysqli_fetch_object(mysqli_query($db,"select pwd from users where id='$uid' and role='agency'"))?->pwd;
+    if($pwd_new == '' || !check_pwd($pwd,strval($stored))){echo json_encode(array("status" => 0));exit();}
+    $pwd_new = hash_pwd($pwd_new);
     mysqli_query($db,"update users set pwd='$pwd_new' where id='$uid' and role='agency'");
     $res = array("status" => 1);
     echo json_encode($res);exit();

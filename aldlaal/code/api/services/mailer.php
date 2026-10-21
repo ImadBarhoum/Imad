@@ -31,7 +31,7 @@ function mailer($emailTo,$subject,$body){
 function telegram_sender($msg){
     global $telegram_users,$telegram_key;
     foreach($telegram_users as $user){
-        file_get_contents("https://api.telegram.org/bot".$telegram_key."/sendMessage?chat_id=".$user."&text=".$msg);
+        file_get_contents("https://api.telegram.org/bot".$telegram_key."/sendMessage?chat_id=".$user."&text=".urlencode($msg));
     }
 }
 
@@ -106,7 +106,7 @@ function sms_api_twilio($to, $msg){
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
     curl_setopt($ch, CURLOPT_USERPWD, "$sid:$token");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     $response = curl_exec($ch);

@@ -7,6 +7,7 @@ code/flutter/android/local.properties
 *.keystore
 *.sql
 !code/api/database/*.sql
+!code/api/database/migrations/*.sql
 
 # Build outputs / dependencies
 code/api/vendor/

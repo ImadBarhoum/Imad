@@ -1,11 +1,11 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-isset($rawdata["video"]) ? $video = $rawdata["video"] : $video = '';
+isset($rawdata["video"]) && is_string($rawdata["video"]) ? $video = $rawdata["video"] : $video = '';
 
 if(!isset($p[1]) || $p[1] == ''){
     echo json_encode(array("status" => 0));exit();
-}elseif($p[1] == 'save'){
+}elseif($p[1] == 'save' && $auth["valid"] == 1){
     save($video);
 }else{
     echo json_encode(array("status" => 0));exit();

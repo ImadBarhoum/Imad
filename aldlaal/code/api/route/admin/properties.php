@@ -1,8 +1,8 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 // run
-$perPage = isset($rawdata["per_page"]) ? mysqli_real_escape_string($db, $rawdata["per_page"]) : 0;
-$page = isset($rawdata["page"]) ? mysqli_real_escape_string($db, ($rawdata["page"]-1)*$perPage) : 0;
+$perPage = int_param($rawdata["per_page"] ?? 0, 0, 500);
+$page = (max(1, int_param($rawdata["page"] ?? 1, 1)) - 1) * $perPage;
 $id = isset($rawdata["id"]) && $rawdata["id"] != null ? mysqli_real_escape_string($db,$rawdata["id"]) : 0;
 $agency_id = isset($rawdata["agency_id"]) && $rawdata["agency_id"] != null ? mysqli_real_escape_string($db,$rawdata["agency_id"]) : 0;
 $title = isset($rawdata["title"]) ? mysqli_real_escape_string($db,$rawdata["title"]) : '';
@@ -182,8 +182,8 @@ function get_page($page,$perPage,$id,$agency_id,$title,$purpose,$type,$bedrooms,
 function add($agency_id,$title,$description,$purpose,$type,$price,$curr,$bedrooms,$bathrooms,$garages,$area_m2,$address,$city,$state,$location,$img,$plan_img,$imgs,$estate_status,$status,$admin_review){
     global $db;
     $admin_review = $admin_review != '' ? $admin_review : 'pending';
-    $imgs = json_encode($imgs,JSON_UNESCAPED_UNICODE);
-    $location = json_encode($location,JSON_UNESCAPED_UNICODE);
+    $imgs = mysqli_real_escape_string($db,json_encode($imgs,JSON_UNESCAPED_UNICODE));
+    $location = mysqli_real_escape_string($db,json_encode($location,JSON_UNESCAPED_UNICODE));
     mysqli_query($db,"insert into properties (agency_id,title,description,purpose,type,price,curr,bedrooms,bathrooms,garages,area_m2,address,city,state,location,img,plan_img,imgs,estate_status,status,admin_review) 
                             values ('$agency_id','$title','$description','$purpose','$type','$price','$curr','$bedrooms','$bathrooms','$garages','$area_m2','$address','$city','$state','$location','$img','$plan_img','$imgs','$estate_status','$status','$admin_review')");
     $res = array(
@@ -195,8 +195,8 @@ function add($agency_id,$title,$description,$purpose,$type,$price,$curr,$bedroom
 // edit
 function edit($id,$agency_id,$title,$description,$purpose,$type,$price,$curr,$bedrooms,$bathrooms,$garages,$area_m2,$address,$city,$state,$location,$img,$plan_img,$imgs,$estate_status,$status,$admin_review){
     global $db;
-    $imgs = json_encode($imgs,JSON_UNESCAPED_UNICODE);
-    $location = json_encode($location,true);
+    $imgs = mysqli_real_escape_string($db,json_encode($imgs,JSON_UNESCAPED_UNICODE));
+    $location = mysqli_real_escape_string($db,json_encode($location,true));
     mysqli_query($db,"update properties set agency_id='$agency_id',title='$title',description='$description',purpose='$purpose',type='$type',
                             price='$price',curr='$curr',bedrooms='$bedrooms',bathrooms='$bathrooms',garages='$garages',area_m2='$area_m2',address='$address',city='$city',state='$state',
                             location='$location',img='$img',plan_img='$plan_img',imgs='$imgs',estate_status='$estate_status',status='$status',admin_review='$admin_review'

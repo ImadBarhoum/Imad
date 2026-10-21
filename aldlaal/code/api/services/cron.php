@@ -1,6 +1,11 @@
 <?php
 if(!isset($fp)){echo json_encode(array("status" => 0));exit();}
 
+// when $cron_key is set in config.php, the cron URL must be /cron/autorun/<cron_key>
+if(isset($cron_key) && $cron_key != '' && (!isset($p[2]) || !hash_equals($cron_key, $p[2]))){
+    echo json_encode(array("status" => 0));exit();
+}
+
 if (!isset($p[1]) || $p[1] == '') {
     echo json_encode(array("status" => 0));exit();
 }elseif($p[1] == 'autorun'){
@@ -41,16 +46,16 @@ function send_notifications(){
                 $ads = [];
                 while($ads_qr = mysqli_fetch_object($ads_qr1)){
                     $ads[] = array(
-                        "id" => intval($qr->id),
-                        "title" => $qr->title,
-                        "price" => $qr->price,
-                        "bedrooms" => $qr->bedrooms,
-                        "bathrooms" => $qr->bathrooms,
-                        "garages" => $qr->garages,
-                        "area_m2" => $qr->area_m2,
-                        "city" => $qr->city,
-                        "state" => $qr->state,
-                        "img" => $qr->img,
+                        "id" => intval($ads_qr->id),
+                        "title" => $ads_qr->title,
+                        "price" => $ads_qr->price,
+                        "bedrooms" => $ads_qr->bedrooms,
+                        "bathrooms" => $ads_qr->bathrooms,
+                        "garages" => $ads_qr->garages,
+                        "area_m2" => $ads_qr->area_m2,
+                        "city" => $ads_qr->city,
+                        "state" => $ads_qr->state,
+                        "img" => $ads_qr->img,
                     );
                 }
 
@@ -62,7 +67,7 @@ function send_notifications(){
                     sendNotification($uid,'عقارات جديدة مطابقة لبحثك','تمت إضافة '.$ads_row.' عقار، وهي مطابقة لبحثك.','New properties matching your search',$ads_row.' properties have been added, And they match your search','/ads/ads',$id);
                 }
             }
-            $rnd = rand(1000,9999);
+            $rnd = random_int(1000,9999);
             $count = $count+$ads_row;
             mysqli_query($db,"UPDATE search_favorites SET count='$count',rnd='$rnd' WHERE id='$id'");
         }

@@ -7,9 +7,44 @@ function generateRandomString($length = 10) {
     $randomString = '';
     $max = strlen($characters) - 1;
     for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $max)];
+        $randomString .= $characters[random_int(0, $max)];
     }
     return $randomString;
+}
+#### PASSWORDS
+function hash_pwd($pwd){
+    return password_hash($pwd, PASSWORD_DEFAULT);
+}
+// accepts old plain text passwords too, $needs_rehash tells the caller to save a new hash
+function check_pwd($pwd,$stored,&$needs_rehash = false){
+    if($stored == '' || $pwd == ''){return false;}
+    if(!password_get_info($stored)['algo']){
+        $needs_rehash = true;
+        return hash_equals($stored, $pwd);
+    }
+    $needs_rehash = password_needs_rehash($stored, PASSWORD_DEFAULT);
+    return password_verify($pwd, $stored);
+}
+// saves a new hash after login; keeps the old value if the pwd column is still too short (migration not run yet)
+function upgrade_pwd($table,$id,$pwd,$old){
+    global $db;
+    $hash = hash_pwd($pwd);
+    $id = intval($id);
+    try{
+        mysqli_query($db,"update $table set pwd='$hash' where id='$id'");
+        $saved = mysqli_fetch_object(mysqli_query($db,"select pwd from $table where id='$id'"))?->pwd;
+    }catch(Exception $e){$saved = '';}
+    if($saved !== $hash){
+        $old = mysqli_real_escape_string($db,$old);
+        mysqli_query($db,"update $table set pwd='$old' where id='$id'");
+    }
+}
+// safe integer for LIMIT / OFFSET values
+function int_param($value,$default = 0,$max = 0){
+    $value = is_numeric($value) ? intval($value) : $default;
+    if($value < 0){$value = $default;}
+    if($max > 0 && $value > $max){$value = $max;}
+    return $value;
 }
 #### FETCH STATES AND CITYS
 function get_states($country='SY'){
@@ -32,7 +67,7 @@ function get_states($country='SY'){
 function get_citys($state,$country='SY'){
     global $db;
     $data = [];
-    $qr1 = mysqli_query($db,"select * from citys where country='$country' and state_ar='$state' or state_en='$state' order by city_ar asc");
+    $qr1 = mysqli_query($db,"select * from citys where country='$country' and (state_ar='$state' or state_en='$state') order by city_ar asc");
     while($qr = mysqli_fetch_object($qr1)){
         $data[] = array(
             "id" => intval($qr->id),
