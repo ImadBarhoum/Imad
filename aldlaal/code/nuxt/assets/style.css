@@ -1,0 +1,58 @@
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+/* Fonts */
+.ar {
+    font-family: 'Cairo', sans-serif !important;
+}
+.en {
+    font-family: 'Montserrat', sans-serif !important;
+}
+html{
+    font-family: 'Cairo' !important;
+}
+/* End Fonts */
+.table-cs-name {
+    min-width: 250px;
+}
+
+
+
+.primary_color{
+    color: #0D3276 !important;
+}
+.white_text{
+    color: #ffffff !important;
+}
+.black_text{
+    color: #000000 !important;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.v-navigation-drawer .v-list-item__prepend{
+    width: 55px;
+}
+.v-navigation-drawer .v-list-item--nav .v-list-item-title{
+    font-size: 16px !important;
+    line-height: 3rem !important;
+}
+.v-navigation-drawer__scrim{
+    opacity: 0 !important;
+}

@@ -1,0 +1,10 @@
+/.idea
+/vendor
+/config.php
+/composer.lock
+
+#skip imgs
+/uploads/imgs/lg/2*
+/uploads/imgs/md/2*
+/uploads/imgs/sm/2*
+/uploads/videos/*

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218635516758",
+    "project_id": "aldlaal",
+    "storage_bucket": "aldlaal.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218635516758:android:f78fa2049e5d08a771b4f7",
+        "android_client_info": {
+          "package_name": "com.aldlaal.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7I0_ryOFMoomWW2iO0gWPnwl3_-IJH9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
