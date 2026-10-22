@@ -19,8 +19,8 @@ if(!isset($p[1]) || $p[1] == ''){
 
 function save_img($img){
     global $db;
-    // only base64 data URIs are accepted (not file paths or URLs)
-    if(!preg_match('/^data:image\/[a-z0-9.+-]+;base64,/i', $img)){echo json_encode(array("status" => 0));exit();}
+    // only base64 data URIs are accepted (not file paths or URLs); the app may send an empty mime type
+    if(!preg_match('/^data:(image\/[a-z0-9.+-]+)?;base64,/i', $img)){echo json_encode(array("status" => 0));exit();}
     if(@exif_imagetype($img) === false){echo json_encode(array("status" => 0));exit();}
     $yearMonth = date('Y-m');
 
