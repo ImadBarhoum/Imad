@@ -39,7 +39,7 @@ void disposeDeepLinkListener() {
 
 String? _getTargetRouteFromUri(Uri uri) {
   if (uri.pathSegments.isNotEmpty) {
-    if (uri.pathSegments.length == 2 && uri.pathSegments[0] == 'link') {
+    if (uri.pathSegments.length == 2 && uri.pathSegments[0] == 'link' && int.tryParse(uri.pathSegments[1]) != null) {
       final id = uri.pathSegments[1];
       print('DeepLink: Parsed route to: /ads/one/$id');
       return '/ads/one/$id';

@@ -44,8 +44,6 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSAllowsArbitraryLoads</key>
-	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Aldlaal Syria requires access to your camera to allow you to take photos for your profile and upload them. Your photos will only be used within the app and will not be shared without your permission.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -81,10 +79,5 @@
 	<string>We use your location to show you relevant listings and services near you.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We use your location to notify you about important updates and new listings in your area, even when the app is in the background.</string>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
-    </dict>
 </dict>
 </plist>
