@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.aldlaal.app",
+      "sha256_cert_fingerprints": [
+        "C1:FB:C4:ED:A2:52:56:B9:8D:C2:03:83:77:BE:8A:18:B8:56:F3:8A:1F:0C:E0:4A:F7:46:02:FE:11:A2:36:1E"
+      ]
+    }
+  }
+]

@@ -1,0 +1,20 @@
+# Secrets - never commit
+code/api/config.php
+code/nuxt/.env
+code/flutter/android/key.properties
+code/flutter/android/local.properties
+*.jks
+*.keystore
+*.sql
+!code/api/database/*.sql
+!code/api/database/migrations/*.sql
+
+# Build outputs / dependencies
+code/api/vendor/
+code/nuxt/.nuxt/
+code/nuxt/.output/
+code/nuxt/dist/
+code/nuxt/node_modules/
+code/flutter/build/
+code/flutter/ios/build/
+code/flutter/.dart_tool/
